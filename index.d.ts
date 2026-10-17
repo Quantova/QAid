@@ -5,7 +5,7 @@ export type RecordType = 'programme' | 'application' | 'decision' | 'approval' |
 export type Role = 'authority' | 'intake' | 'assessor' | 'approver' | 'payer';
 
 export interface Envelope {
-  format: 'qaid/1';
+  format: 'qaid/2';
   type: RecordType;
   algorithm: 'ML-DSA-65';
   signer: { id: string; publicKey: string };
@@ -40,9 +40,12 @@ export interface ProgrammeOptions {
 export interface ApplicationOptions {
   key: Uint8Array;
   programme: Envelope;
-  applicantRef: string;
+  applicantRef?: string;
+  partyScheme?: string;
   contentDigest?: string;
   content?: Uint8Array;
+  applicant: string;
+  partySecret: Uint8Array;
   receivedAt?: string;
   note?: string;
 }
@@ -110,10 +113,16 @@ export interface VerifyOptions {
   requireAnchor?: boolean;
   at?: string;
   maxAnchorDelay?: number;
+  maxAnchorLookups?: number;
+  keyStatus?: (keyId: string) => unknown;
   rpc?: string | string[];
   client?: unknown;
   clients?: Array<string | unknown>;
   trustSingleEndpoint?: boolean;
+  trustCustomEndpoints?: boolean;
+  allowLoopback?: boolean;
+  endpointAllowList?: string[];
+  expectedSender?: string | string[];
   contract?: string;
   trustCustomContract?: boolean;
 }
@@ -145,6 +154,8 @@ export interface AnchorOptions {
   client?: unknown;
   clients?: Array<string | unknown>;
   trustSingleEndpoint?: boolean;
+  allowLoopback?: boolean;
+  endpointAllowList?: string[];
   meter?: number;
   maxFee?: string | number;
   timeoutMs?: number;
@@ -164,11 +175,11 @@ export function disbursement(options: DisbursementOptions): Envelope;
 export function recovery(options: RecoveryOptions): Envelope;
 export function create(type: RecordType, options: Record<string, unknown>): Envelope;
 export function anchor(envelopes: Envelope | Envelope[], options: AnchorOptions): Promise<Envelope[]>;
-export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; timeoutMs?: number }): Promise<Envelope[]>;
+export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; allowLoopback?: boolean; endpointAllowList?: string[]; timeoutMs?: number }): Promise<Envelope[]>;
 export function verify(envelope: unknown, options: VerifyOptions): Promise<VerifyResult>;
 export function refOf(envelope: Envelope): string;
 export function anchorDigest(envelope: Envelope): string;
-export const FORMAT: 'qaid/1';
+export const FORMAT: 'qaid/2';
 export const ALGORITHM: 'ML-DSA-65';
 export const KIND: 1105;
 export const TYPES: readonly RecordType[];

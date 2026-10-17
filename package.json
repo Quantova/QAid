@@ -1,6 +1,6 @@
 {
   "name": "@quantovainc/qaid",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Post quantum integrity for grants, subsidies and aid. Seals programme rules, applications, eligibility decisions, approvals, disbursements and recoveries with ML-DSA-65 under FIPS 204 and Quantova time proofs, so a payment without a decision, above its award or made twice is detected.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -13,6 +13,9 @@
   },
   "bin": {
     "qaid": "bin/qaid.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
   },
   "files": [
     "index.js",
