@@ -130,6 +130,9 @@ export interface VerifyResult {
   status: 'valid' | 'invalid' | 'indeterminate';
   type: RecordType | null;
   checks: VerifyCheck[];
+  endpoints: string[];
+  officialEndpoints: boolean | null;
+  notices: string[];
   [field: string]: unknown;
 }
 
@@ -149,7 +152,7 @@ export function generateKey(): Uint8Array;
 export function publicKey(key: Uint8Array): Uint8Array;
 export function keyId(key: Uint8Array): string;
 export function describeKey(key: Uint8Array): KeyDescription;
-export function commitParty(identity: string): { salt: Uint8Array; ref: string };
+export function commitParty(identity: string, options?: { salt?: Uint8Array; secret?: Uint8Array; scope?: string }): { salt: Uint8Array; ref: string };
 export function programme(options: ProgrammeOptions): Envelope;
 export function application(options: ApplicationOptions): Envelope;
 export function decision(options: DecisionOptions): Envelope;
