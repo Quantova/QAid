@@ -51,7 +51,7 @@ test('one award per applicant, however the applicant is written in case, separat
   let t0 = now - 80000;
   for (let round = 0; round < ROUNDS; round += 1) {
     t0 += 600;
-    const prog = await at(q.programme({ key: K.authority, title: 'Relief ' + round, rules: Buffer.from('rules'), currency: 'EUR', budget: '1000000', maxAward: '5000', approvalAbove: '1000000', opensAt: iso(t0), publishedAt: iso(t0) }), t0 + 1);
+    const prog = await at(q.programme({ key: K.authority, title: 'Relief ' + round, rules: Buffer.from('rules'), currency: 'EUR', budget: '1000000', maxAward: '5000', approvalAbove: '1000000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 1);
     const name = NAMES[int(NAMES.length)];
     for (const variant of forms(rng, name)) {
       t0 += 1;
@@ -89,7 +89,7 @@ test('awards to applicants with different canonical forms stay valid', async () 
   const roles = { authorityKeys: [q.keyId(K.authority)], intakeKeys: [q.keyId(K.intake)], assessorKeys: [q.keyId(K.assessor)] };
   const secret = new Uint8Array(32).fill(4);
   const t0 = now - 80000;
-  const prog = await at(q.programme({ key: K.authority, title: 'Relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '1000000', maxAward: '5000', approvalAbove: '1000000', opensAt: iso(t0), publishedAt: iso(t0) }), t0 + 1);
+  const prog = await at(q.programme({ key: K.authority, title: 'Relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '1000000', maxAward: '5000', approvalAbove: '1000000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 1);
   const records = [prog];
   let prev = null;
   for (let i = 0; i < NAMES.length; i += 1) {

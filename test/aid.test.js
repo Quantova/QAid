@@ -15,7 +15,7 @@ async function programme() {
   const at = stamper(q, net);
   const K = { authority: q.generateKey(), intake: q.generateKey(), assessor: q.generateKey() };
   const t0 = now - 80000;
-  const prog = await at(q.programme({ key: K.authority, title: 'Flood relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '100000', maxAward: '5000', approvalAbove: '100000', opensAt: iso(t0), publishedAt: iso(t0) }), t0 + 10);
+  const prog = await at(q.programme({ key: K.authority, title: 'Flood relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '100000', maxAward: '5000', approvalAbove: '100000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 10);
   const secret = new Uint8Array(32).fill(9);
   const apply = (applicant, n) => at(q.application({ key: K.intake, programme: prog, applicant, partySecret: secret, content: Buffer.from('a' + n), receivedAt: iso(t0 + 100 + n) }), t0 + 110 + n);
   const decide = (application, opts, n) => at(q.decision(Object.assign({ key: K.assessor, programme: prog, application, currency: 'EUR', award: '5000', decidedAt: iso(t0 + 300 + n) }, opts)), t0 + 310 + n);
@@ -28,7 +28,7 @@ test('an application must derive the applicant from the secret of the authority'
   assert.throws(() => q.application({ key: p.K.intake, programme: p.prog, applicantRef: q.commitParty('NL-123456789').ref, content: Buffer.from('x') }), /partySecret/);
   assert.throws(() => q.application({ key: p.K.intake, programme: p.prog, applicant: 'NL-123456789', partySecret: p.secret, applicantRef: q.commitParty('NL-123456789').ref, content: Buffer.from('x') }));
   const a = q.application({ key: p.K.intake, programme: p.prog, applicant: 'NL-123456789', partySecret: p.secret, content: Buffer.from('x') });
-  assert.strictEqual(a.format, 'qaid/2');
+  assert.strictEqual(a.format, F.FORMAT);
   assert.strictEqual(a.statement.partyScheme, F.PARTY_SCHEME);
   assert.strictEqual(a.statement.applicantRef, q.commitParty('NL-123456789', { secret: p.secret, scope: q.refOf(p.prog) }).ref);
 });
