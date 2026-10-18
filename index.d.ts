@@ -5,13 +5,18 @@ export type RecordType = 'programme' | 'application' | 'decision' | 'approval' |
 export type Role = 'authority' | 'intake' | 'assessor' | 'approver' | 'payer';
 
 export interface Envelope {
-  format: 'qaid/2';
+  format: 'qaid/3';
   type: RecordType;
   algorithm: 'ML-DSA-65';
   signer: { id: string; publicKey: string };
   statement: Record<string, unknown>;
   signature: string;
   anchor?: unknown;
+}
+
+export interface SeriesLedger {
+  read(name: string): Promise<string | null>;
+  compareAndSwap(name: string, expected: string | null, next: string): Promise<boolean>;
 }
 
 export interface KeyDescription {
@@ -33,6 +38,7 @@ export interface ProgrammeOptions {
   maxAward: string;
   approvalAbove: string;
   opensAt: string;
+  closesAt: string;
   publishedAt?: string;
   note?: string;
 }
@@ -59,6 +65,7 @@ export interface DecisionOptions {
   award: string;
   previous?: Envelope;
   first?: boolean;
+  ledger?: string | SeriesLedger;
   decidedAt?: string;
   note?: string;
 }
@@ -79,6 +86,7 @@ export interface DisbursementOptions {
   amount: string;
   previous?: Envelope;
   first?: boolean;
+  ledger?: string | SeriesLedger;
   paidAt?: string;
   note?: string;
 }
@@ -174,17 +182,21 @@ export function describeKey(key: Uint8Array): KeyDescription;
 export function commitParty(identity: string, options?: { salt?: Uint8Array; secret?: Uint8Array; scope?: string }): { salt: Uint8Array; ref: string };
 export function programme(options: ProgrammeOptions): Envelope;
 export function application(options: ApplicationOptions): Envelope;
+export function decision(options: DecisionOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
 export function decision(options: DecisionOptions): Envelope;
 export function approval(options: ApprovalOptions): Envelope;
+export function disbursement(options: DisbursementOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
 export function disbursement(options: DisbursementOptions): Envelope;
 export function recovery(options: RecoveryOptions): Envelope;
-export function create(type: RecordType, options: Record<string, unknown>): Envelope;
+export function create(type: RecordType, options: Record<string, unknown>): Envelope | Promise<Envelope>;
+export function folderLedger(folder: string): SeriesLedger;
+export function ledgerLatest(ledger: string | SeriesLedger, type: RecordType, seriesRef: string): Promise<Envelope | null>;
 export function anchor(envelopes: Envelope | Envelope[], options: AnchorOptions): Promise<Envelope[]>;
 export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; allowLoopback?: boolean; endpointAllowList?: string[]; timeoutMs?: number }): Promise<Envelope[]>;
 export function verify(envelope: unknown, options: VerifyOptions): Promise<VerifyResult>;
 export function refOf(envelope: Envelope): string;
 export function anchorDigest(envelope: Envelope): string;
-export const FORMAT: 'qaid/2';
+export const FORMAT: 'qaid/3';
 export const ALGORITHM: 'ML-DSA-65';
 export const KIND: 1105;
 export const TYPES: readonly RecordType[];
