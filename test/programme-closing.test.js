@@ -15,7 +15,7 @@ async function world() {
   const K = {};
   for (const r of q.ROLES) K[r] = q.generateKey();
   const t0 = now - 80000;
-  const secret = new Uint8Array(32).fill(3);
+  const secret = Uint8Array.from({ length: 32 }, (_, i) => (3 + i) & 255);
   const programme = await at(q.programme({ key: K.authority, title: 'Flood relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '100000', maxAward: '5000', approvalAbove: '100000', opensAt: iso(t0), closesAt: iso(t0 + 1000), publishedAt: iso(t0) }), t0 + 10);
   const roles = Object.fromEntries(Object.entries(K).map(([r, k]) => [r + 'Keys', [q.keyId(k)]]));
   const check = (env, more) => {

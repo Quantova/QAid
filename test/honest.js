@@ -10,7 +10,7 @@ async function honest() {
   const K = {};
   for (const r of q.ROLES) K[r] = q.generateKey();
   const t0 = now - 80000;
-  const secret = new Uint8Array(32).fill(9);
+  const secret = Uint8Array.from({ length: 32 }, (_, i) => (9 + i) & 255);
   const programme = await at(q.programme({ key: K.authority, title: 'Flood relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '100000', maxAward: '5000', approvalAbove: '1000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 10);
   const application = await at(q.application({ key: K.intake, programme, applicant: 'NL-123456789', partySecret: secret, content: Buffer.from('form'), receivedAt: iso(t0 + 100) }), t0 + 110);
   const decision = await at(q.decision({ key: K.assessor, programme, application, award: '2500', first: true, decidedAt: iso(t0 + 300) }), t0 + 310);

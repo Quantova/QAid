@@ -46,7 +46,7 @@ test('one award per applicant, however the applicant is written in case, separat
   const at = stamper(q, net);
   const K = { authority: q.generateKey(), intake: q.generateKey(), intake2: q.generateKey(), assessor: q.generateKey() };
   const roles = { authorityKeys: [q.keyId(K.authority)], intakeKeys: [q.keyId(K.intake), q.keyId(K.intake2)], assessorKeys: [q.keyId(K.assessor)] };
-  const secret = new Uint8Array(32).fill(3);
+  const secret = Uint8Array.from({ length: 32 }, (_, i) => (3 + i) & 255);
   const counts = { variants: 0, refusedByLibrary: 0, inSeries: 0, outsideSeries: 0 };
   let t0 = now - 80000;
   for (let round = 0; round < ROUNDS; round += 1) {
@@ -87,7 +87,7 @@ test('awards to applicants with different canonical forms stay valid', async () 
   const at = stamper(q, net);
   const K = { authority: q.generateKey(), intake: q.generateKey(), assessor: q.generateKey() };
   const roles = { authorityKeys: [q.keyId(K.authority)], intakeKeys: [q.keyId(K.intake)], assessorKeys: [q.keyId(K.assessor)] };
-  const secret = new Uint8Array(32).fill(4);
+  const secret = Uint8Array.from({ length: 32 }, (_, i) => (4 + i) & 255);
   const t0 = now - 80000;
   const prog = await at(q.programme({ key: K.authority, title: 'Relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '1000000', maxAward: '5000', approvalAbove: '1000000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 1);
   const records = [prog];
