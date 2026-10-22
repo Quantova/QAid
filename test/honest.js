@@ -13,9 +13,9 @@ async function honest() {
   const secret = Uint8Array.from({ length: 32 }, (_, i) => (9 + i) & 255);
   const programme = await at(q.programme({ key: K.authority, title: 'Flood relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '100000', maxAward: '5000', approvalAbove: '1000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 10);
   const application = await at(q.application({ key: K.intake, programme, applicant: 'NL-123456789', partySecret: secret, content: Buffer.from('form'), receivedAt: iso(t0 + 100) }), t0 + 110);
-  const decision = await at(q.decision({ key: K.assessor, programme, application, award: '2500', first: true, decidedAt: iso(t0 + 300) }), t0 + 310);
+  const decision = await at(q.decision({ ledger: false, key: K.assessor, programme, application, award: '2500', first: true, decidedAt: iso(t0 + 300) }), t0 + 310);
   const approval = await at(q.approval({ key: K.approver, decision, approvedAt: iso(t0 + 400) }), t0 + 410);
-  const disbursement = await at(q.disbursement({ key: K.payer, programme, decision, approval, amount: '2500', first: true, paidAt: iso(t0 + 500) }), t0 + 510);
+  const disbursement = await at(q.disbursement({ ledger: false, key: K.payer, programme, decision, approval, amount: '2500', first: true, paidAt: iso(t0 + 500) }), t0 + 510);
   const recovery = await at(q.recovery({ key: K.authority, decision, reason: Buffer.from('overpaid'), amount: '100', recoveredAt: iso(t0 + 600) }), t0 + 610);
   net.chain.block(now);
   const roles = Object.fromEntries(Object.entries(K).map(([r, k]) => [r + 'Keys', [q.keyId(k)]]));

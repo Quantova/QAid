@@ -65,7 +65,7 @@ export interface DecisionOptions {
   award: string;
   previous?: Envelope;
   first?: boolean;
-  ledger?: string | SeriesLedger;
+  ledger: string | SeriesLedger | false;
   decidedAt?: string;
   note?: string;
 }
@@ -86,7 +86,7 @@ export interface DisbursementOptions {
   amount: string;
   previous?: Envelope;
   first?: boolean;
-  ledger?: string | SeriesLedger;
+  ledger: string | SeriesLedger | false;
   paidAt?: string;
   note?: string;
 }
@@ -183,10 +183,10 @@ export function commitParty(identity: string, options?: { salt?: Uint8Array; sec
 export function programme(options: ProgrammeOptions): Envelope;
 export function application(options: ApplicationOptions): Envelope;
 export function decision(options: DecisionOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
-export function decision(options: DecisionOptions): Envelope;
+export function decision(options: DecisionOptions & { ledger: false }): Envelope;
 export function approval(options: ApprovalOptions): Envelope;
 export function disbursement(options: DisbursementOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
-export function disbursement(options: DisbursementOptions): Envelope;
+export function disbursement(options: DisbursementOptions & { ledger: false }): Envelope;
 export function recovery(options: RecoveryOptions): Envelope;
 export function create(type: RecordType, options: Record<string, unknown>): Envelope | Promise<Envelope>;
 export function folderLedger(folder: string): SeriesLedger;

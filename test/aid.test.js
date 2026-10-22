@@ -18,7 +18,7 @@ async function programme() {
   const prog = await at(q.programme({ key: K.authority, title: 'Flood relief', rules: Buffer.from('rules'), currency: 'EUR', budget: '100000', maxAward: '5000', approvalAbove: '100000', opensAt: iso(t0), closesAt: iso(t0 + 30 * 86400), publishedAt: iso(t0) }), t0 + 10);
   const secret = Uint8Array.from({ length: 32 }, (_, i) => (9 + i) & 255);
   const apply = (applicant, n) => at(q.application({ key: K.intake, programme: prog, applicant, partySecret: secret, content: Buffer.from('a' + n), receivedAt: iso(t0 + 100 + n) }), t0 + 110 + n);
-  const decide = (application, opts, n) => at(q.decision(Object.assign({ key: K.assessor, programme: prog, application, currency: 'EUR', award: '5000', decidedAt: iso(t0 + 300 + n) }, opts)), t0 + 310 + n);
+  const decide = (application, opts, n) => at(q.decision(Object.assign({ ledger: false, key: K.assessor, programme: prog, application, currency: 'EUR', award: '5000', decidedAt: iso(t0 + 300 + n) }, opts)), t0 + 310 + n);
   const roles = { authorityKeys: [q.keyId(K.authority)], intakeKeys: [q.keyId(K.intake)], assessorKeys: [q.keyId(K.assessor)] };
   return { net, at, K, prog, secret, apply, decide, roles, now };
 }
@@ -48,7 +48,7 @@ test('the same applicant written in another way receives the same commitment and
   for (const [i, v] of variants.entries()) {
     const again = await p.apply(v, i + 1);
     assert.strictEqual(again.statement.applicantRef, first.statement.applicantRef, v);
-    assert.throws(() => q.decision({ key: p.K.assessor, programme: p.prog, application: again, currency: 'EUR', award: '5000', previous: d1 }), /already used the same applicantRef/);
+    assert.throws(() => q.decision({ ledger: false, key: p.K.assessor, programme: p.prog, application: again, currency: 'EUR', award: '5000', previous: d1 }), /already used the same applicantRef/);
   }
 });
 

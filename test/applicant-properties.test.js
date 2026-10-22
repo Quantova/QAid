@@ -61,8 +61,8 @@ test('one award per applicant, however the applicant is written in case, separat
       const a2 = await at(q.application({ key: [K.intake, K.intake2][int(2)], programme: prog, applicant: variant, partySecret: secret, content: Buffer.from('b' + round + variant), receivedAt: iso(t0 + 20) }), t0 + 21);
       assert.strictEqual(a1.statement.applicantRef, a2.statement.applicantRef, JSON.stringify(variant) + ' was committed apart from ' + JSON.stringify(name));
       const award = String(1 + int(5000));
-      const d1 = await at(q.decision({ key: K.assessor, programme: prog, application: a1, award, first: true, decidedAt: iso(t0 + 30) }), t0 + 31);
-      assert.throws(() => q.decision({ key: K.assessor, programme: prog, application: a2, award, previous: d1, decidedAt: iso(t0 + 40) }), (e) => typeof e.code === 'string' && e.code.startsWith(CODE));
+      const d1 = await at(q.decision({ ledger: false, key: K.assessor, programme: prog, application: a1, award, first: true, decidedAt: iso(t0 + 30) }), t0 + 31);
+      assert.throws(() => q.decision({ ledger: false, key: K.assessor, programme: prog, application: a2, award, previous: d1, decidedAt: iso(t0 + 40) }), (e) => typeof e.code === 'string' && e.code.startsWith(CODE));
       counts.refusedByLibrary += 1;
       const last = F.parse(d1).statement;
       const second = String(1 + int(5000));
@@ -72,7 +72,7 @@ test('one award per applicant, however the applicant is written in case, separat
       assert.strictEqual(r.status, 'invalid', 'a second award in the series to ' + JSON.stringify(variant) + ' after ' + JSON.stringify(name) + ' verified ' + r.status + '\n' + failing(r).join('\n'));
       assert.ok(r.checks.some((c) => c.name === 'repeat' && !c.ok), failing(r).join('\n'));
       counts.inSeries += 1;
-      const d3 = await at(q.decision({ key: K.assessor, programme: prog, application: a2, award: second, first: true, decidedAt: iso(t0 + 50) }), t0 + 51);
+      const d3 = await at(q.decision({ ledger: false, key: K.assessor, programme: prog, application: a2, award: second, first: true, decidedAt: iso(t0 + 50) }), t0 + 51);
       const r3 = await q.verify(d3, Object.assign({ type: 'decision', at: iso(now), allSupplied: true, records: [prog, a1, a2, d1, d3] }, roles, net.opts));
       assert.strictEqual(r3.status, 'invalid', 'a second award outside the series to ' + JSON.stringify(variant) + ' verified ' + r3.status + '\n' + failing(r3).join('\n'));
       counts.outsideSeries += 1;
@@ -94,7 +94,7 @@ test('awards to applicants with different canonical forms stay valid', async () 
   let prev = null;
   for (let i = 0; i < NAMES.length; i += 1) {
     const a = await at(q.application({ key: K.intake, programme: prog, applicant: NAMES[i], partySecret: secret, content: Buffer.from('a' + i), receivedAt: iso(t0 + 10 + i) }), t0 + 20);
-    prev = await at(q.decision(Object.assign({ key: K.assessor, programme: prog, application: a, award: '100', decidedAt: iso(t0 + 100 + i) }, prev ? { previous: prev } : { first: true })), t0 + 200);
+    prev = await at(q.decision(Object.assign({ ledger: false, key: K.assessor, programme: prog, application: a, award: '100', decidedAt: iso(t0 + 100 + i) }, prev ? { previous: prev } : { first: true })), t0 + 200);
     records.push(a, prev);
   }
   const r = await q.verify(prev, Object.assign({ type: 'decision', at: iso(now), allSupplied: true, records }, roles, net.opts));
