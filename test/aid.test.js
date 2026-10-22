@@ -25,9 +25,9 @@ async function programme() {
 
 test('an application must derive the applicant from the secret of the authority', async () => {
   const p = await programme();
-  assert.throws(() => q.application({ key: p.K.intake, programme: p.prog, applicantRef: q.commitParty('NL-123456789').ref, content: Buffer.from('x') }), /partySecret/);
-  assert.throws(() => q.application({ key: p.K.intake, programme: p.prog, applicant: 'NL-123456789', partySecret: p.secret, applicantRef: q.commitParty('NL-123456789').ref, content: Buffer.from('x') }));
-  const a = q.application({ key: p.K.intake, programme: p.prog, applicant: 'NL-123456789', partySecret: p.secret, content: Buffer.from('x') });
+  assert.throws(() => q.application({ key: p.K.intake, programme: p.prog, applicantRef: q.commitParty('NL-123456789').ref, content: Buffer.from('x'), receivedAt: new Date(Date.now() - 1000).toISOString() }), /partySecret/);
+  assert.throws(() => q.application({ key: p.K.intake, programme: p.prog, applicant: 'NL-123456789', partySecret: p.secret, applicantRef: q.commitParty('NL-123456789').ref, content: Buffer.from('x'), receivedAt: new Date(Date.now() - 1000).toISOString() }));
+  const a = q.application({ key: p.K.intake, programme: p.prog, applicant: 'NL-123456789', partySecret: p.secret, content: Buffer.from('x'), receivedAt: new Date(Date.now() - 1000).toISOString() });
   assert.strictEqual(a.format, F.FORMAT);
   assert.strictEqual(a.statement.partyScheme, F.PARTY_SCHEME);
   assert.strictEqual(a.statement.applicantRef, q.commitParty('NL-123456789', { secret: p.secret, scope: q.refOf(p.prog) }).ref);
@@ -48,7 +48,7 @@ test('the same applicant written in another way receives the same commitment and
   for (const [i, v] of variants.entries()) {
     const again = await p.apply(v, i + 1);
     assert.strictEqual(again.statement.applicantRef, first.statement.applicantRef, v);
-    assert.throws(() => q.decision({ ledger: false, key: p.K.assessor, programme: p.prog, application: again, currency: 'EUR', award: '5000', previous: d1 }), /already used the same applicantRef/);
+    assert.throws(() => q.decision({ ledger: false, key: p.K.assessor, programme: p.prog, application: again, currency: 'EUR', award: '5000', previous: d1, decidedAt: new Date(Date.now() - 1000).toISOString() }), /already used the same applicantRef/);
   }
 });
 
