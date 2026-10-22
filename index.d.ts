@@ -41,6 +41,7 @@ export interface ProgrammeOptions {
   closesAt: string;
   publishedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface ApplicationOptions {
@@ -54,6 +55,7 @@ export interface ApplicationOptions {
   partySecret: Uint8Array;
   receivedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface DecisionOptions {
@@ -68,6 +70,7 @@ export interface DecisionOptions {
   ledger: string | SeriesLedger | false;
   decidedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface ApprovalOptions {
@@ -75,6 +78,7 @@ export interface ApprovalOptions {
   decision: Envelope;
   approvedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface DisbursementOptions {
@@ -89,6 +93,7 @@ export interface DisbursementOptions {
   ledger: string | SeriesLedger | false;
   paidAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface RecoveryOptions {
@@ -100,6 +105,7 @@ export interface RecoveryOptions {
   amount: string;
   recoveredAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export type KeyStatus = { revoked: false } | { revoked: true; revokedAt: number };
