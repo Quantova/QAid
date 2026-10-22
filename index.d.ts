@@ -106,6 +106,7 @@ export type KeyStatus = { revoked: false } | { revoked: true; revokedAt: number 
 
 export interface VerifyOptions {
   type: RecordType;
+  network: 'testnet' | 'custom';
   authorityKeys?: KeyRef[];
   intakeKeys?: KeyRef[];
   assessorKeys?: KeyRef[];
